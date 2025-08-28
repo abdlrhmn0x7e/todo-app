@@ -15,9 +15,9 @@ export const getBaseUrl = () => {
    */
   const debuggerHost = Constants.expoConfig?.hostUri;
   const localhost = debuggerHost?.split(":")[0];
+  console.log(localhost);
 
   if (!localhost) {
-    // return "https://turbo.t3.gg";
     throw new Error(
       "Failed to get localhost. Please point to your production server.",
     );

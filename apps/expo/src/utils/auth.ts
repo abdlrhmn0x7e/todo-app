@@ -4,10 +4,8 @@ import { createAuthClient } from "better-auth/react";
 
 import { getBaseUrl } from "./base-url";
 
-console.log("getBaseUrl", getBaseUrl());
-
 export const authClient = createAuthClient({
-  baseURL: getBaseUrl(),
+  baseURL: getBaseUrl(), // TODO: change this to an env variable
   plugins: [
     expoClient({
       scheme: "expo",
@@ -17,8 +15,9 @@ export const authClient = createAuthClient({
   ],
 });
 
-export const signIn = () => {
-  return authClient.signIn.social({
+export async function signIn() {
+  await authClient.signIn.social({
     provider: "github",
+    callbackURL: "/",
   });
-};
+}

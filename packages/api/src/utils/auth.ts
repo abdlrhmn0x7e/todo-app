@@ -1,6 +1,8 @@
+import { expo } from "@better-auth/expo";
 import { PrismaClient } from "@prisma/client";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { oAuthProxy } from "better-auth/plugins";
 
 const prisma = new PrismaClient();
 export const auth = betterAuth({
@@ -11,6 +13,7 @@ export const auth = betterAuth({
     github: {
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+      redirectURI: "http://192.168.1.100:3000/api/auth/callback/github",
     },
   },
   advanced: {
@@ -19,4 +22,6 @@ export const auth = betterAuth({
       useNumberId: true,
     },
   },
+  plugins: [expo(), oAuthProxy({ currentURL: "expo://" })],
+  trustedOrigins: ["expo://"],
 });
