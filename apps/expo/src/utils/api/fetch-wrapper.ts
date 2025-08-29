@@ -16,8 +16,8 @@ type HttpMethod =
 
 interface FetchWrapperOptions<T> {
   method?: HttpMethod;
-  headers?: HeadersInit_;
-  body?: BodyInit_;
+  headers?: Record<string, string>;
+  body?: Record<string, unknown>;
   params?: Record<string, string | boolean | undefined>;
   contentType?: string;
   schema: z.ZodSchema<T>;
@@ -66,10 +66,11 @@ export async function fetchWrapper<T>(
     fetch(fullUrl, {
       method,
       headers: requestHeaders,
-      body,
+      body: JSON.stringify(body),
     }),
   );
 
+  // TODO: handle error
   if (error) {
     throw error;
   }

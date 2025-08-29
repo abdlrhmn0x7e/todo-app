@@ -1,5 +1,7 @@
-import type { PrismaService } from "@/prisma/prisma.service";
+import { PrismaService } from "@/prisma/prisma.service";
 import { Injectable } from "@nestjs/common";
+
+import type { UpdateTaskDto } from "@repo/validators";
 
 import { CreateTaskDto } from "./dto/create-task.dto";
 
@@ -11,6 +13,9 @@ export class TaskService {
     return this.prisma.task.findMany({
       where: {
         ownerId: userId,
+      },
+      orderBy: {
+        dueDate: "asc",
       },
     });
   }
@@ -25,6 +30,13 @@ export class TaskService {
           },
         },
       },
+    });
+  }
+
+  update(id: number, data: UpdateTaskDto, userId: number) {
+    return this.prisma.task.update({
+      where: { id, ownerId: userId },
+      data,
     });
   }
 }

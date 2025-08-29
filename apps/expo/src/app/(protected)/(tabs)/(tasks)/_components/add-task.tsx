@@ -27,7 +27,7 @@ export function AddTask({ className }: { className?: string }) {
       </Button>
 
       <Modal isOpen={isOpen} setIsOpen={setIsOpen}>
-        <TaskForm />
+        <TaskForm onSuccess={() => setIsOpen(false)} />
       </Modal>
     </>
   );

@@ -19,11 +19,13 @@ import { useTheme } from "~/components/providers/theme-provider";
 import ThemedText from "~/components/themed-text";
 import { Button } from "~/components/ui/button";
 import { Dialog } from "~/components/ui/dialog";
+import { useCreateTaskMutation } from "~/hooks/mutations/tasks";
+import { cn } from "~/utils";
 
 const taskFormSchema = createTaskSchema;
 export type TaskFormValues = z.infer<typeof taskFormSchema>;
 
-export function TaskForm() {
+export function TaskForm({ onSuccess }: { onSuccess: () => void }) {
   const { theme } = useTheme();
   const defaultStyles = useDefaultStyles();
   const [isDescriptionShown, setIsDescriptionShown] = useState(false);
@@ -46,6 +48,11 @@ export function TaskForm() {
         value: "HIGH" as const,
         color: "red",
       },
+      {
+        label: "Urgent",
+        value: "URGENT" as const,
+        color: "red",
+      },
     ],
     [],
   );
@@ -54,12 +61,14 @@ export function TaskForm() {
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
       title: "",
-      description: "",
-      priority: taskPriorities[priorityIdx]?.value,
-      dueDate: new Date(),
+      description: undefined,
+      priority: "LOW",
+      dueDate: undefined,
     },
   });
   const dueDate = form.watch("dueDate");
+  const title = form.watch("title");
+  const { mutate: createTask, isPending } = useCreateTaskMutation();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -71,10 +80,19 @@ export function TaskForm() {
 
   function handleSubmit(values: TaskFormValues) {
     console.log("values", values);
+    createTask(values, {
+      onSuccess,
+    });
   }
 
   function handlePriorityChange() {
-    setPriorityIdx((prev) => (prev + 1) % taskPriorities.length);
+    const nextIdx = (priorityIdx + 1) % taskPriorities.length;
+    setPriorityIdx(nextIdx);
+
+    const newPriority = taskPriorities[nextIdx]?.value;
+    if (newPriority) {
+      form.setValue("priority", newPriority);
+    }
   }
 
   return (
@@ -83,14 +101,16 @@ export function TaskForm() {
         <Controller
           control={form.control}
           name="title"
-          render={({ field }) => (
+          render={({ field: { onBlur, onChange, value } }) => (
             <TextInput
               className="text-xl"
               placeholder="New Task"
               style={{
                 color: theme.foreground,
               }}
-              {...field}
+              value={value}
+              onChangeText={onChange}
+              onBlur={onBlur}
             />
           )}
         />
@@ -99,15 +119,16 @@ export function TaskForm() {
           <Controller
             control={form.control}
             name="description"
-            render={({ field }) => (
+            render={({ field: { onBlur, onChange, value } }) => (
               <TextInput
                 placeholder="Add details"
                 className="text-lg"
-                autoFocus
                 style={{
                   color: theme.foreground,
                 }}
-                {...field}
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
               />
             )}
           />
@@ -180,16 +201,18 @@ export function TaskForm() {
             <ChevronRightIcon color={theme.primary} size={16} />
           </View>
         </View>
-
-        <Button
-          variant="ghost"
-          onPress={form.handleSubmit(handleSubmit)}
-          disabled={!form.formState.isSubmitting}
-        >
-          <Button.Icon Icon={SaveIcon} color={theme.foreground} />
-          <Button.Text style={{ color: theme.foreground }}>Save</Button.Text>
-        </Button>
       </View>
+      <Button
+        onPress={() => {
+          console.log("form valid?", form.formState.isValid);
+          void form.handleSubmit(handleSubmit)();
+        }}
+        className={cn((!title || isPending) && "opacity-50")}
+        disabled={!title || isPending}
+      >
+        <Button.Icon Icon={SaveIcon} />
+        <Button.Text>{isPending ? "Saving..." : "Save"}</Button.Text>
+      </Button>
 
       <Dialog isOpen={showDueDate} setIsOpen={setShowDueDate}>
         <Dialog.Content>

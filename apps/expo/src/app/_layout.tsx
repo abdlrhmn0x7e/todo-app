@@ -19,7 +19,10 @@ export default function RootLayout() {
         <Stack screenOptions={{ animation: "none" }}>
           <Stack.Screen
             name="(protected)"
-            options={{ headerShown: false, navigationBarHidden: true }}
+            options={{
+              headerShown: false,
+              navigationBarHidden: true,
+            }}
           />
 
           <Stack.Screen

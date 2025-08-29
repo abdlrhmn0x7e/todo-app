@@ -1,6 +1,16 @@
 import type { UserSession } from "@thallesp/nestjs-better-auth";
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from "@nestjs/common";
 import { AuthGuard, Session } from "@thallesp/nestjs-better-auth";
+
+import type { UpdateTaskDto } from "@repo/validators";
 
 import type { CreateTaskDto } from "./dto/create-task.dto";
 import { TaskService } from "./task.service";
@@ -18,5 +28,14 @@ export class TaskController {
   @Post()
   create(@Body() data: CreateTaskDto, @Session() session: UserSession) {
     return this.taskService.create(data, +session.user.id);
+  }
+
+  @Patch(":id")
+  update(
+    @Param("id") id: string,
+    @Body() data: UpdateTaskDto,
+    @Session() session: UserSession,
+  ) {
+    return this.taskService.update(+id, data, +session.user.id);
   }
 }
