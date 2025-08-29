@@ -1,34 +1,34 @@
 import type { z } from "zod/v4";
 import { useEffect, useMemo, useState } from "react";
-import { ScrollView, TextInput, View } from "react-native";
-import { Calendar } from "react-native-calendars";
+import { Pressable, ScrollView, TextInput, View } from "react-native";
+import DateTimePicker, { useDefaultStyles } from "react-native-ui-datepicker";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { taskSchema } from "@repo/validators";
+import { createTaskSchema } from "@repo/validators";
 import {
   AlignLeftIcon,
   CalendarIcon,
   ChevronRightIcon,
   CircleDashedIcon,
+  ClockIcon,
   SaveIcon,
+  XIcon,
 } from "lucide-react-native";
 import { Controller, useForm } from "react-hook-form";
 
 import { useTheme } from "~/components/providers/theme-provider";
+import ThemedText from "~/components/themed-text";
 import { Button } from "~/components/ui/button";
+import { Dialog } from "~/components/ui/dialog";
 
-const taskFormSchema = taskSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  items: true,
-  tags: true,
-  userId: true,
-});
+const taskFormSchema = createTaskSchema;
 export type TaskFormValues = z.infer<typeof taskFormSchema>;
 
 export function TaskForm() {
   const { theme } = useTheme();
+  const defaultStyles = useDefaultStyles();
   const [isDescriptionShown, setIsDescriptionShown] = useState(false);
+  const [showDueDate, setShowDueDate] = useState(false);
+  const [priorityIdx, setPriorityIdx] = useState<number>(0);
   const taskPriorities = useMemo(
     () => [
       {
@@ -49,19 +49,17 @@ export function TaskForm() {
     ],
     [],
   );
-  const [priorityIdx, setPriorityIdx] = useState<number>(0);
-  const [showDueDate, setShowDueDate] = useState(false);
 
   const form = useForm<TaskFormValues>({
     resolver: zodResolver(taskFormSchema),
     defaultValues: {
       title: "",
       description: "",
-      status: "PENDING",
       priority: taskPriorities[priorityIdx]?.value,
       dueDate: new Date(),
     },
   });
+  const dueDate = form.watch("dueDate");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -80,30 +78,15 @@ export function TaskForm() {
   }
 
   return (
-    <View>
-      <Controller
-        control={form.control}
-        name="title"
-        render={({ field }) => (
-          <TextInput
-            className="text-xl"
-            placeholder="New Task"
-            style={{
-              color: theme.foreground,
-            }}
-            {...field}
-          />
-        )}
-      />
-
-      {isDescriptionShown && (
+    <View className="gap-3">
+      <View>
         <Controller
           control={form.control}
-          name="description"
+          name="title"
           render={({ field }) => (
             <TextInput
-              placeholder="Add details"
-              className="text-lg"
+              className="text-xl"
+              placeholder="New Task"
               style={{
                 color: theme.foreground,
               }}
@@ -111,7 +94,45 @@ export function TaskForm() {
             />
           )}
         />
-      )}
+
+        {isDescriptionShown && (
+          <Controller
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <TextInput
+                placeholder="Add details"
+                className="text-lg"
+                autoFocus
+                style={{
+                  color: theme.foreground,
+                }}
+                {...field}
+              />
+            )}
+          />
+        )}
+      </View>
+
+      <View className="flex-row gap-3">
+        {dueDate && (
+          <View
+            className="flex-row items-center gap-2 rounded-lg border border-zinc-200 pl-2"
+            style={{ borderColor: theme.border }}
+          >
+            <ClockIcon color={theme.primary} size={16} />
+            <ThemedText>{dueDate.toLocaleDateString()}</ThemedText>
+            <Pressable
+              onPress={() => {
+                form.setValue("dueDate", undefined);
+              }}
+              className="p-2"
+            >
+              <XIcon color={theme.mutedForeground} size={16} />
+            </Pressable>
+          </View>
+        )}
+      </View>
 
       <View className="flex-row justify-between">
         <View className="relative flex-1">
@@ -170,7 +191,33 @@ export function TaskForm() {
         </Button>
       </View>
 
-      {showDueDate && <Calendar />}
+      <Dialog isOpen={showDueDate} setIsOpen={setShowDueDate}>
+        <Dialog.Content>
+          <Dialog.Header closeDialog={() => setShowDueDate(false)}>
+            Due date
+          </Dialog.Header>
+          <Controller
+            control={form.control}
+            name="dueDate"
+            render={({ field }) => (
+              <DateTimePicker
+                mode="single"
+                date={field.value}
+                onChange={({ date }) => {
+                  field.onChange(date);
+                }}
+                styles={defaultStyles}
+              />
+            )}
+          />
+
+          <Dialog.Footer>
+            <Button className="w-full" onPress={() => setShowDueDate(false)}>
+              <Button.Text>Done</Button.Text>
+            </Button>
+          </Dialog.Footer>
+        </Dialog.Content>
+      </Dialog>
     </View>
   );
 }

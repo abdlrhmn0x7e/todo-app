@@ -12,25 +12,16 @@ enum Priority {
   URGENT
 }
 
-model Tag {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  tasks     Task[]   @relation("TaskTags")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 model Task {
   id          Int        @id @default(autoincrement())
   title       String
   description String?
   status      TaskStatus @default(PENDING)
-  priority    Priority   @default(MEDIUM)
-  dueDate     DateTime?
+  priority    Priority   @default(LOW)
+  dueDate     DateTime   @default(now())
   owner       User       @relation("UserTasks", fields: [ownerId], references: [id])
   ownerId     Int
   items       TaskItem[] @relation("TaskItems")
-  tags        Tag[]      @relation("TaskTags")
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 

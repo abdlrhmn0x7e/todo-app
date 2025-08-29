@@ -124,10 +124,10 @@ export function Modal({ isOpen, setIsOpen, children, ...props }: UIModalProps) {
           {children}
 
           <Animated.View
-            className="absolute inset-x-24 top-4 h-1 flex-1 justify-end rounded-full"
+            className="absolute inset-x-48 top-4 h-1 flex-1 justify-end rounded-full"
             style={{
               opacity: backdropOpacity,
-              backgroundColor: theme.foreground + "20",
+              backgroundColor: theme.foreground,
             }}
             onTouchStart={performClose}
           />

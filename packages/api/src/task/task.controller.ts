@@ -1,7 +1,8 @@
 import type { UserSession } from "@thallesp/nestjs-better-auth";
-import { Controller, Get, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import { AuthGuard, Session } from "@thallesp/nestjs-better-auth";
 
+import type { CreateTaskDto } from "./dto/create-task.dto";
 import { TaskService } from "./task.service";
 
 @Controller("task")
@@ -11,7 +12,11 @@ export class TaskController {
 
   @Get()
   findAll(@Session() session: UserSession) {
-    console.log(session);
-    return this.taskService.findAll();
+    return this.taskService.findAll(+session.user.id);
+  }
+
+  @Post()
+  create(@Body() data: CreateTaskDto, @Session() session: UserSession) {
+    return this.taskService.create(data, +session.user.id);
   }
 }

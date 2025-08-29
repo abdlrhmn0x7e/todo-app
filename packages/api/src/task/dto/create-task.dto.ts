@@ -1,11 +1,4 @@
-import { taskSchema } from "@repo/validators";
-import { z } from "zod";
-
-export const createTaskSchema = taskSchema.omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true,
-  userId: true,
-});
+import type { z } from "zod";
+import { createTaskSchema } from "@repo/validators";
 
 export type CreateTaskDto = z.infer<typeof createTaskSchema>;

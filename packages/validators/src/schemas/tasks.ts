@@ -10,3 +10,18 @@ export const taskSchema = z.object({
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
 });
+
+export const createTaskSchema = taskSchema
+  .omit({
+    id: true,
+    createdAt: true,
+    updatedAt: true,
+    items: true,
+    tags: true,
+    status: true,
+    userId: true,
+  })
+  .extend({
+    description: z.string().optional(),
+    dueDate: z.date().optional(),
+  });
