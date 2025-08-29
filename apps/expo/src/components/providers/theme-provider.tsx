@@ -5,29 +5,30 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useColorScheme } from "react-native";
+import { Appearance, useColorScheme } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { getThemeColors, ThemeName } from "~/utils/constants/colors";
+import type { ThemeName } from "~/utils/constants/colors";
+import { getThemeColors } from "~/utils/constants/colors";
 
-export const ThemeContext = createContext({
-  theme: getThemeColors("light"),
-  themeName: "light" as ThemeName,
-  setThemeName: (t: ThemeName) => {},
-});
+export const ThemeContext = createContext<{
+  theme: ReturnType<typeof getThemeColors>;
+  themeName: ThemeName;
+  changeTheme: (t: ThemeName) => void;
+} | null>(null);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const system = useColorScheme(); // 'light' | 'dark' | null
   const [themeName, setThemeName] = useState<ThemeName>("light");
 
   useEffect(() => {
-    AsyncStorage.getItem("themeName").then((v) => {
+    void AsyncStorage.getItem("themeName").then((v) => {
       if (v === "light" || v === "dark") setThemeName(v);
     });
   }, []);
 
   useEffect(() => {
-    AsyncStorage.setItem("themeName", themeName);
+    void AsyncStorage.setItem("themeName", themeName);
   }, [themeName]);
 
   const theme = useMemo(() => {
@@ -37,8 +38,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       : getThemeColors("light");
   }, [system, themeName]);
 
+  function changeTheme(t: ThemeName) {
+    setThemeName(t);
+    Appearance.setColorScheme(t);
+  }
+
   return (
-    <ThemeContext.Provider value={{ theme, themeName, setThemeName }}>
+    <ThemeContext.Provider value={{ theme, themeName, changeTheme }}>
       {children}
     </ThemeContext.Provider>
   );

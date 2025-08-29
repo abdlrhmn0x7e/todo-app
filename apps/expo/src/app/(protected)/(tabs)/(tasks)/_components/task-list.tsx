@@ -1,5 +1,6 @@
 import { useMemo } from "react";
-import { Animated, ScrollView, View } from "react-native";
+import { ScrollView, View } from "react-native";
+import Animated, { Easing, LinearTransition } from "react-native-reanimated";
 import { isFuture, isSameDay } from "date-fns";
 import {
   ClockIcon,
@@ -40,7 +41,8 @@ function CompletedTasks({ tasks }: { tasks: Task[] }) {
   return (
     <Animated.View
       className="rounded-3xl"
-      style={{ backgroundColor: theme.muted }}
+      style={{ backgroundColor: theme.card }}
+      layout={LinearTransition.easing(Easing.bezier(0.25, 0.1, 0.25, 1.0))}
     >
       <View className="flex-row items-center justify-between px-4 py-6">
         <View className="flex-row items-center gap-2">
@@ -57,11 +59,14 @@ function CompletedTasks({ tasks }: { tasks: Task[] }) {
         </ThemedText>
       </View>
 
-      <View className="gap-4 rounded-lg px-4 pb-6 pt-3">
+      <Animated.View
+        className="gap-4 rounded-lg px-4 pb-6 pt-3"
+        layout={LinearTransition.easing(Easing.bezier(0.25, 0.1, 0.25, 1.0))}
+      >
         {tasks.map((task) => (
           <TaskItem key={task.id} task={task} />
         ))}
-      </View>
+      </Animated.View>
     </Animated.View>
   );
 }
@@ -99,10 +104,14 @@ function UnCompletedTasks({ tasks }: { tasks: Task[] }) {
   }
 
   return (
-    <View className="gap-1 rounded-3xl" style={{ overflow: "hidden" }}>
+    <Animated.View
+      className="gap-1 rounded-3xl"
+      style={{ overflow: "hidden" }}
+      layout={LinearTransition.easing(Easing.bezier(0.25, 0.1, 0.25, 1.0))}
+    >
       <View
         className="flex-row items-center justify-between px-4 py-6"
-        style={{ backgroundColor: theme.muted }}
+        style={{ backgroundColor: theme.card }}
       >
         <View className="flex-row items-center gap-2">
           <ListIcon size={24} color={theme.mutedForeground} />
@@ -120,7 +129,8 @@ function UnCompletedTasks({ tasks }: { tasks: Task[] }) {
         <Animated.View
           key={key}
           className="gap-4 rounded-lg px-4 pb-6 pt-3"
-          style={{ backgroundColor: theme.muted }}
+          style={{ backgroundColor: theme.card }}
+          layout={LinearTransition.easing(Easing.bezier(0.25, 0.1, 0.25, 1.0))}
         >
           <View className="flex-row items-center gap-2 py-2">
             <ClockIcon size={20} color={theme.mutedForeground} />
@@ -137,7 +147,7 @@ function UnCompletedTasks({ tasks }: { tasks: Task[] }) {
           ))}
         </Animated.View>
       ))}
-    </View>
+    </Animated.View>
   );
 }
 

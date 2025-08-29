@@ -39,4 +39,10 @@ export class TaskService {
       data,
     });
   }
+
+  delete(id: number, userId: number) {
+    return this.prisma.task.delete({
+      where: { id, ownerId: userId },
+    });
+  }
 }

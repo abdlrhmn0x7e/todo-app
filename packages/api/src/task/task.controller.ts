@@ -2,6 +2,7 @@ import type { UserSession } from "@thallesp/nestjs-better-auth";
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -37,5 +38,10 @@ export class TaskController {
     @Session() session: UserSession,
   ) {
     return this.taskService.update(+id, data, +session.user.id);
+  }
+
+  @Delete(":id")
+  delete(@Param("id") id: string, @Session() session: UserSession) {
+    return this.taskService.delete(+id, +session.user.id);
   }
 }

@@ -33,6 +33,8 @@ export default function TabLayout() {
             borderBottomColor: theme.border,
             borderBottomWidth: 0,
             height: 128,
+            shadowOpacity: 0,
+            shadowColor: "transparent",
           },
           headerTitleStyle: {
             color: theme.foreground,
@@ -53,12 +55,16 @@ export default function TabLayout() {
           headerStyle: {
             backgroundColor: theme.background,
             borderBottomColor: theme.border,
-            borderBottomWidth: 1,
+            borderBottomWidth: 0,
+            height: 128,
+            shadowOpacity: 0,
+            shadowColor: "transparent",
           },
           headerTitleStyle: {
             color: theme.foreground,
+            fontSize: 24,
           },
-          headerShown: false,
+          headerTitleAlign: "center",
         }}
       />
     </Tabs>

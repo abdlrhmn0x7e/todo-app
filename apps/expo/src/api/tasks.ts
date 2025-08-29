@@ -29,5 +29,12 @@ export const _tasks = {
         body: data,
       });
     },
+
+    delete(id: number) {
+      return fetchWrapper(`/api/task/${id}`, {
+        method: "DELETE",
+        schema: z.any(),
+      });
+    },
   },
 };

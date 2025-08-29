@@ -10,8 +10,7 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-sky-950 dark:bg-white", // TODO: change this later on
-        outline: "border border-foreground",
+        default: "bg-sky-200 dark:bg-white", // TODO: change this later on
         ghost: "bg-transparent active:bg-sky-950/90",
       },
       size: {
@@ -44,7 +43,7 @@ export function Button({
   ...props
 }: PressableProps & {
   children: React.ReactNode;
-  variant?: "default" | "outline" | "ghost";
+  variant?: "default" | "ghost";
   size?: "default" | "sm" | "lg" | "icon";
 }) {
   return (
