@@ -75,6 +75,10 @@ GITHUB_CLIENT_ID="your-github-client-id"
 GITHUB_CLIENT_SECRET="your-github-client-secret"
 ```
 
+> Note
+> There's a hard coded value for an absolute Ip in the auth api instance in api/lib/auth.ts figure out what's localhost's
+> ip in the machine running the server in your network and replace that value
+
 #### Frontend Environment Variables
 
 Create a `.env.local` file in the `apps/expo` directory:
